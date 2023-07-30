@@ -9,21 +9,6 @@ createRoot(document.getElementById('root') as HTMLElement).render(
     <BrowserRouter>
       <Routes>
         <Route path="/" element={<App />} />
-        <Route
-          path="/about"
-          element={
-            <>
-              <div className="text-center">
-                <h1 className="text-xl">About</h1>
-                <div>
-                  <Link to="/" className="text-purple-400 underline">
-                    Home
-                  </Link>
-                </div>
-              </div>
-            </>
-          }
-        />
       </Routes>
     </BrowserRouter>
   </React.StrictMode>
