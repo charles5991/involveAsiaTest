@@ -16,11 +16,12 @@ const App = () => {
   const [isHoveringEnter, setIsHoveringEnter] = useState(false)
   const [isSpecialGroup, setIsSpecialGroup] = useState(false)
   const formRef = useRef<FormInstance>() // Use FormInstance type for formRef
-
-  const handleFinish = async (values: any) => {
-    console.log('Form values:', values)
-    formRef.current?.resetFields() // Reset the form fields after console log
-  }
+  const [selectedParameter, setSelectedParameter] = useState<
+    string | undefined
+  >(undefined)
+  const [selectedOperator, setSelectedOperator] = useState<string | undefined>(
+    undefined
+  )
 
   const handleValuesChange = (changedValues: any) => {
     if ('checkbox-group' in changedValues) {
@@ -29,7 +30,42 @@ const App = () => {
         changedValues['checkbox-group'].includes('SpecialGroup')
       )
     }
+    if ('parameter' in changedValues) {
+      setSelectedParameter(changedValues['parameter'])
+    }
+    if ('operator' in changedValues) {
+      setSelectedOperator(changedValues['operator'])
+    }
   }
+
+  const handleFinish = async (values: any) => {
+    const finalValues = {
+      ...values,
+      parameter: selectedParameter,
+      operator: selectedOperator
+    }
+    console.log('Final form values with selected values:', finalValues)
+
+    setSelectedParameter(undefined)
+    setSelectedOperator(undefined)
+
+    formRef.current?.resetFields()
+  }
+
+  const dummyDataForSelect1 = [
+    { value: 'field1', label: 'Field 1' },
+    { value: 'field2', label: 'Field 2' },
+    { value: 'field3', label: 'Field 3' }
+  ]
+
+  const dummyDataForSelect2 = [
+    { value: 'equal', label: 'Equal to' },
+    { value: 'notEqual', label: 'Not Equal to' },
+    { value: 'greaterThan', label: 'Greater Than' },
+    { value: 'lessThan', label: 'Less Than' },
+    { value: 'greaterThanOrEqual', label: 'Greater Than or Equal to' },
+    { value: 'lessThanOrEqual', label: 'Less Than or Equal to' }
+  ]
 
   return (
     <div>
@@ -94,7 +130,7 @@ const App = () => {
         <ProFormCheckbox.Group
           name="checkbox-group"
           options={['SpecialGroup']}
-          valuePropName="checked" // Custom prop name for the checkbox value
+          valuePropName="checked"
         />
         <ProFormList
           name="attributes"
@@ -115,50 +151,66 @@ const App = () => {
               {listDom}
             </ProCard>
           )}
-          creatorRecord={{ name: '', items: [{ name: '' }] }}
+          creatorRecord={{ name: '', items: [{ name: '' }, { name: '' }] }}
           initialValue={[{ name: '', items: [{ name: '' }] }]}
         >
-          <ProForm.Item isListField style={{ marginBlockEnd: 0 }}>
-            <ProFormList
-              name="items"
-              creatorButtonProps={{
-                creatorButtonText: 'Add',
-                icon: false,
-                type: 'link',
-                style: { width: 'unset' }
-              }}
-              min={1}
-              copyIconProps={false}
-              deleteIconProps={{ tooltipText: 'Delete' }}
-              itemRender={({ listDom, action }) => (
-                <div
-                  style={{
-                    display: 'flex', // Use 'flex' layout to align the delete icon
-                    alignItems: 'center' // Center the delete icon vertically
-                  }}
-                >
-                  <div style={{ flex: 1 }}>{listDom}</div>{' '}
-                  {/* Display the list item */}
-                  {action} {/* Display the delete icon */}
-                </div>
-              )}
+          <div style={{ display: 'flex', alignItems: 'center' }}>
+            <span>If</span>
+            <Select
+              style={{ width: 120, marginLeft: 8 }}
+              options={dummyDataForSelect1}
+              placeholder="Select parameter"
+              value={selectedParameter}
+              onChange={(value) => setSelectedParameter(value)}
+            />
+            <Select
+              style={{ width: 120, marginLeft: 8 }}
+              options={dummyDataForSelect2}
+              placeholder="Select operator"
+              value={selectedOperator}
+              onChange={(value) => setSelectedOperator(value)}
+            />
+
+            <ProForm.Item
+              isListField
+              style={{ marginBlockEnd: 0, marginLeft: 8 }}
             >
-              <ProFormText
-                allowClear={false}
-                width="md"
-                name={['name']}
-                placeholder="Enter parameter"
-              />
-            </ProFormList>
-          </ProForm.Item>
+              <ProFormList
+                name="items"
+                creatorButtonProps={{
+                  creatorButtonText: 'Add',
+                  icon: false,
+                  type: 'link'
+                }}
+                min={1}
+                copyIconProps={false}
+                deleteIconProps={{ tooltipText: 'Delete' }}
+                itemRender={({ listDom, action }) => (
+                  <div
+                    style={{
+                      display: 'flex', // Use 'flex' layout to align the delete icon
+                      alignItems: 'center' // Center the delete icon vertically
+                    }}
+                  >
+                    <div style={{ flex: 1 }}>{listDom}</div>{' '}
+                    {/* Display the list item */}
+                    {action} {/* Display the delete icon */}
+                  </div>
+                )}
+              >
+                <ProFormText
+                  width="sm"
+                  name={['name']}
+                  placeholder="Enter parameter"
+                />
+              </ProFormList>
+            </ProForm.Item>
+          </div>
+          <div style={{ display: 'flex', alignItems: 'center' }}>
+            <span className="pr-10">then revenue is</span>
+            <ProFormText width="sm" name="name" placeholder="Enter Amount" />
+          </div>
         </ProFormList>
-        <ProFormText
-          style={{ padding: 0 }}
-          width="md"
-          name="name"
-          label="then revenue is"
-          placeholder="Enter Amount"
-        />
       </ProForm>
     </div>
   )
