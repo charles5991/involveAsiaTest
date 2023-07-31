@@ -8,6 +8,8 @@ import {
 } from '@ant-design/pro-components'
 import { Button, FormInstance } from 'antd'
 import React, { useState, useRef } from 'react'
+import { Select } from 'antd'
+const { Option } = Select
 
 const App = () => {
   const descriptionMaxLength = 200
@@ -143,7 +145,7 @@ const App = () => {
             >
               <ProFormText
                 allowClear={false}
-                width="xs"
+                width="md"
                 name={['name']}
                 placeholder="Enter parameter"
               />
